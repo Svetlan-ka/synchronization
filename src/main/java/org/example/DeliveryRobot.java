@@ -19,27 +19,27 @@ public class DeliveryRobot {
             Thread thread1 = new Thread(() -> {
                 int freqHitR = 0; //частота попадания символа
 
-                synchronized (sizeToFreq) {
-                    for (int i = 0; i < route.length(); i++) {
-                        char c = route.charAt(i);
+                for (int i = 0; i < route.length(); i++) {
+                    char c = route.charAt(i);
 
-                        if (c == 'R') {
-                            freqHitR++;
-                        } else if (freqHitR != 0) {
+                    if (c == 'R') {
+                        freqHitR++;
+                    } else if (freqHitR != 0) {
 
-                            if (sizeToFreq.containsKey(freqHitR)) {
-                                int newCount = sizeToFreq.get(freqHitR) + 1; //увеличиваем кол-во частот
+                        if (sizeToFreq.containsKey(freqHitR)) {
+                            int newCount = sizeToFreq.get(freqHitR) + 1; //увеличиваем кол-во частот
+                            synchronized (sizeToFreq) {
                                 sizeToFreq.put(freqHitR, newCount);
                                 sizeToFreq.notify();
-                            } else {
+                            }
+                        } else {
+                            synchronized (sizeToFreq) {
                                 sizeToFreq.put(freqHitR, 1); //создаем новую частоту
                                 sizeToFreq.notify();
                             }
-                            freqHitR = 0;
-
                         }
+                        freqHitR = 0;
                     }
-
                 }
             });
             threads1.add(thread1);
